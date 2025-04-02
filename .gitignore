@@ -1,0 +1,17 @@
+# created by virtualenv automatically
+__pycache__/
+
+
+.Python
+env/
+build/
+dist/
+lib/
+lib64/
+parts/
+sdist/
+var/
+.venv/
+Scripts/
+.idea
+.pdm.toml
