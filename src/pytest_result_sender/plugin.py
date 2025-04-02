@@ -1,6 +1,5 @@
 from datetime import datetime
 
-print("aa")
 
 
 def pytest_configure():
