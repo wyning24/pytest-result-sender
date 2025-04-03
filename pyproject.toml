@@ -40,12 +40,14 @@ exclude = '''
 
 
 [tool.pdm.scripts]
+test = "pytest"
 check = { composite =[
     "isort .",
     "black .",
     "flake8 ."
 
 ]}
+
 
 
 
