@@ -1,9 +1,21 @@
 from datetime import datetime
+from tkinter import getint
 
 import pytest
 import requests
 
 data = {"failed": 0, "passed": 0}
+
+def pytest_addoption(parser):
+    # 用来添加配置
+    parser.addini(
+        'send_when',
+        help="何时发送结果，每一次都发送every；或者 on_fail失败的时候发送"
+    )
+    parser.addini(
+        'send_api',
+        help="测试结果发往何处"
+    )
 
 
 def pytest_collection_finish(session: pytest.Session) -> None:
@@ -19,9 +31,12 @@ def pytest_runtest_logreport(report: pytest.TestReport) -> None:
         data[report.outcome] += 1
 
 
-def pytest_configure():
-    # 配置加载完毕之后执行，测试用例执行之前执行
+def pytest_configure(config:pytest.Config) -> None:
+    # 当代码执行到这里，表示所有的配置项，已经加载完成.
+    # 配置加载完毕之后执行，测试用例执行之前执行    ------说明可以读取到配置项目
     data["start_time"] = datetime.now()
+    data['send_when'] = config.getini("send_when")
+    data['send_api'] = config.getini("send_api") #这样就可以使用全局变量来获取
     print(f"{datetime.now()} pytest开始执行")
 
 
@@ -40,12 +55,20 @@ def pytest_unconfigure():
     # assert data['total'] == 3
     # assert data['passed'] == 2
     # assert data['pass_ratio'] == '66.67%'
+    send_result()
 
-    url = (
-        "https://webhook.site/b0c125b7-78c8-48df-95fb-6238098c52bd"
-    )
+def send_result():
+    if data['send_when'] == 'on_fail' and data['failed'] == 0:
+        # 如果配置 只有测试失败才发送，但实际没有失败，则不发送
+        return
+    if not data['send_api']:
+        # 如果没有配置api地址，则不发送测试结果
+        return
 
-    # url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c1d0282b-6994-9e0a-0378dcbf2514'
+
+
+
+    url = data['send_api'] #动态指定结果的发送位置
     content = f"""
     pytest自动化测试结果耶<br>
     测试时间：{data['end_time']} 
@@ -54,7 +77,10 @@ def pytest_unconfigure():
     测试通过数量：<font color='blue'>{data['passed']}</font> <br>
     测试失败数量：<font color='red'>{data['failed']}</font> <br>
     测试通过率：{data['pass_ratio']}<br>
-    测试报告地址：http://baidu.com
+    测试报告地址：https://baidu.com
     """
-    requests.post(url, json={"msgtype": "markdown",
-                             "markdown": {"content": content}})
+    try:
+        requests.post(url, json={"msgtype": "markdown",
+                                 "markdown": {"content": content}})
+    except Exception:
+        pass
