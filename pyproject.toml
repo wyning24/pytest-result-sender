@@ -3,7 +3,7 @@ name = "pytest-result-sender"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
-    {name = "username", email = "username@example.com"},
+    {name = "wyning24", email = "username@example.com"},
 ]
 dependencies = ["pytest>=8.3.5", "requests>=2.32.3"]
 requires-python = ">=3.10"
