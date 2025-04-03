@@ -42,12 +42,12 @@ def pytest_unconfigure():
     # assert data['pass_ratio'] == '66.67%'
 
     url = (
-        "https://tongyi.aliyun.com/?st=null&sessionId=938bb4fc62f34a7497f7e884f306ac01"
+        "https://webhook.site/b0c125b7-78c8-48df-95fb-6238098c52bd"
     )
 
     # url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c1d0282b-6994-9e0a-0378dcbf2514'
     content = f"""
-    pytest自动化测试结果<br>
+    pytest自动化测试结果耶<br>
     测试时间：{data['end_time']} 
     用例数量：{data['total']}<br>
     执行时长：{data['duration']}s<br>
@@ -56,4 +56,5 @@ def pytest_unconfigure():
     测试通过率：{data['pass_ratio']}<br>
     测试报告地址：http://baidu.com
     """
-    requests.post(url, json={"msgtype": "markdown", "markdown": {"content": content}})
+    requests.post(url, json={"msgtype": "markdown",
+                             "markdown": {"content": content}})
